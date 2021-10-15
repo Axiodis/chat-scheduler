@@ -49,7 +49,7 @@ Params: user_id, discount_id, conversation_id, payload
 ### Get conversation
 `GET http://127.0.0.1:8000/conversations/<id>`
 
-### Get chat
+### Create conversation
 `POST http://127.0.0.1:8000/conversations/<id>`
 
 Params: client_id, operator_id, store_id

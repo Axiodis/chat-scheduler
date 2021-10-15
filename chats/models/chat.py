@@ -21,6 +21,16 @@ class Chat(models.Model):
     payload = models.CharField(max_length=300)
     created_date = models.DateTimeField(auto_now_add=True)
 
+    _needs_schedule = False
+
+    @property
+    def needs_schedule(self):
+        return self._needs_schedule
+
+    @needs_schedule.setter
+    def needs_schedule(self, value):
+        self._needs_schedule = value
+
 
 class Schedule(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.RESTRICT)

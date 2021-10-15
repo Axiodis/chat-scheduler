@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytz
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 # method for updating
@@ -9,8 +9,18 @@ from chats.models import Chat, Schedule
 from .tasks import send_chat
 
 
+@receiver(pre_save, sender=Chat, dispatch_uid="schedule_send_chat")
+def schedule_send_chat(sender, instance: Chat, **kwargs):
+    instance.needs_schedule = False
+    if not instance.id:
+        instance.needs_schedule = True
+
+
 @receiver(post_save, sender=Chat, dispatch_uid="schedule_send_chat")
 def schedule_send_chat(sender, instance: Chat, **kwargs):
+    if not instance.needs_schedule:
+        return
+
     timezone = instance.conversation.client.timezone or instance.conversation.store.timezone
 
     now = datetime.utcnow()
@@ -36,3 +46,4 @@ def schedule_send_chat(sender, instance: Chat, **kwargs):
     schedule.save()
 
     send_chat.apply_async((instance.id,), eta=eta)
+    instance.needs_schedule = False

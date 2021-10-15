@@ -12,6 +12,8 @@ Install & run mysql
 
 Create `chats_scheduler` db
 
+`python manage.py migrate`
+
 ### Set db env variables
 `export DB_USER=<user>`
 `export DB_PASSWORD=<password>`
